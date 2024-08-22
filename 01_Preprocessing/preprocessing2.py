@@ -12,7 +12,7 @@ VERBOSE_MODE = True
 
 DATASET = 'diabetes_dataset.csv'
 PREDICT_SET = 'diabetes_app.csv'
-FEATURE_COLS = ['Pregnancies', 'Glucose', 'Insulin', 'BloodPressure', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+FEATURE_COLS = ['Pregnancies', 'Glucose', 'Insulin', 'BloodPressure', 'SkinThickness', 'BMI', 'DiabetesPedigreeFunction', 'Age']
 TARGET_COL = 'Outcome'
 
 def send_predictions(predictions: pd.Series) -> str:
@@ -70,10 +70,13 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
     # Remove rows without Glucose column values
     df = df[df['Glucose'].notnull()]
 
+    # Infer missing Insulin values using Linear Regression with the Glucose column
+    # df_to_train = df[df['Glucose'].notnull() & df['Insulin'].notnull()]
+    # model = create_linear_regression_model(X = df_to_train[['Glucose']], y = df_to_train['Insulin'])
+    # df['Insulin'] = df.apply(lambda row: _calculate_insulin_value(row, model, rmn_min=0.01, rmn_max=0.2), axis=1)
+
     # Infer missing Insulin values using Polynomial Regression with the Glucose column
-    df_to_train = df[df['Glucose'].notnull() & df['Insulin'].notnull()]
-    model = create_linear_regression_model(X = df_to_train[['Glucose']], y = df_to_train['Insulin'])
-    df['Insulin'] = df.apply(lambda row: _calculate_insulin_value(row, model, rmn_min=0.01, rmn_max=0.2), axis=1)
+    # df_to_train = df[df['Glucose'].notnull() & df['Insulin'].notnull()]
     # poly = PolynomialFeatures(degree=2)
     # model = create_linear_regression_model(X = poly.fit_transform(df_to_train[['Glucose']]), y = df_to_train['Insulin'])
     # df['Insulin'] = df.apply(lambda row: _calculate_insulin_value(row, model, rmn_min=0.01, rmn_max=0.2, poly = poly), axis=1)
@@ -140,6 +143,16 @@ def analyze(apply_preprocess: bool) -> None:
     colors = {0: 'blue', 1: 'red'} # Filter into two groups: Outcome = 0 and Outcome = 1
     df['Color'] = df['Outcome'].apply(lambda x: colors[x])
     pd.plotting.scatter_matrix(df, alpha = 0.8, c=df['Color'], diagonal='kde')
+    plt.show()
+
+    # Plot the frequency chart between the Outcome and the other columns
+    fig, axs = plt.subplots(1, len(FEATURE_COLS))
+    groups = df.groupby('Outcome')
+    for i, col in enumerate(FEATURE_COLS):
+        for name, group in groups:
+            group[col].value_counts().sort_index().plot(kind='bar', ax=axs[i], color=colors[name], alpha=0.8)
+        axs[i].set_title(col)
+    plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
