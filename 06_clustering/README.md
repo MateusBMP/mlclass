@@ -12,3 +12,13 @@ Atenção: a atividade consiste nos grupos encontrados baseados somente nas vari
 Se quiserem entender melhor o que corresponde cada variável listada acima fisicamente/anatomicamente no olho podem usar a referência:
 https://www.draandreia.com.br/?page_id=1027
 https://www.draandreia.com.br/wp-content/uploads/2017/09/biom4.png
+
+## Informações
+
+Para calculcar a Dioptria do cristalino, utilizamos a equação de Lensmaker:
+
+> _D = (n - 1) * (1/R1 - 1/R2)_
+
+Sendo a curvatura _C = 1/R_, equivalentes a K1 e K2, e _n = 1.376_, equivalente ao índice de refração da córnea. Assim, temos a seguinte equação para a dioptria do cristalino:
+
+> _D = 0.376 * (K2 - K1)_
